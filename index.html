@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Homepage</title>
+    
+    <!-- 引入你要求的图标和字体 (已清理多余空格) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/driedpenguin/image/prim-icon.png"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Megrim|Lato" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 全局样式和配色 */
+        :root {
+            --bg-color: #f7f7f9; /* 背景颜色 */
+            --text-color: #333333; /* 文字颜色 */
+            --hover-color: #ff7e67; /* 悬停时的文字颜色 */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Lato', sans-serif; /* 默认正文字体 */
+        }
+
+        /* 顶部标题样式 (使用了 Megrim 字体) */
+        h1 {
+            font-family: 'Megrim', cursive;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            letter-spacing: 2px;
+        }
+
+        /* 图标容器布局 */
+        .container {
+            display: flex;
+            gap: 5rem; /* 两个图标之间的间距 */
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 单个项目链接的样式 */
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-5px); /* 鼠标悬停时整体微微上浮 */
+        }
+
+        /* 图标下方的文字样式 (使用了 Pixelify Sans 字体) */
+        .nav-item p {
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover p {
+            color: var(--hover-color);
+        }
+
+        /* 图片包裹器，用于统一尺寸和控制悬停效果 */
+        .img-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 保证图片比例不失真 */
+        }
+
+        /* 右侧图标的悬停特效 (平滑淡入淡出) */
+        .hover-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 鼠标悬停在链接上时，显示第二张图片 */
+        .nav-item:hover .hover-img {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 可选的顶部标题，如果不需要可以删除这行 -->
+    <h1>Welcome to My Space</h1>
+
+    <div class="container">
+        
+        <!-- 左边图标：Neocities主页 -->
+        <a href="https://penguinchips.neocities.org/" class="nav-item">
+            <div class="img-wrapper">
+                <img src="icon/me3.png" alt="me3 icon">
+            </div>
+            <p>homepage(neocities)</p>
+        </a>
+
+        <!-- 右边图标：Comics页面 (包含悬停切换效果) -->
+        <a href="comics.html" class="nav-item">
+            <div class="img-wrapper">
+                <!-- 默认显示的图片 -->
+                <img src="icon/ihateyaoi.png" class="default-img" alt="comics icon">
+                <!-- 鼠标悬停时显示的图片 -->
+                <img src="icon/ihateyaoi2.png" class="hover-img" alt="comics hover icon">
+            </div>
+            <!-- 我为了排版对称在这里加了"comics"文字，如果你不需要文字，可以把下面这行 <p> 删掉 -->
+            <p>comics</p> 
+        </a>
+
+    </div>
+
+</body>
+</html>
