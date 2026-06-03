@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         @font-face {
@@ -75,9 +77,7 @@
             z-index: 2;
         }
 
-        .book-group:hover {
-            z-index: 10;
-        }
+        .book-group:hover { z-index: 10; }
 
         .book-link {
             text-decoration: none;
@@ -94,7 +94,6 @@
             height: 205px;
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
             transform-origin: bottom center;
-            border: none; 
         }
 
         .book-container img {
@@ -105,18 +104,11 @@
             height: 100%;
             transition: all 0.5s ease-in-out;
             backface-visibility: hidden;
+            object-fit: contain;
         }
 
-        .spine-img {
-            object-fit: contain;
-            transform: rotateY(0deg);
-        }
-
-        .cover-img {
-            object-fit: contain;
-            transform: rotateY(90deg);
-            opacity: 0;
-        }
+        .spine-img { transform: rotateY(0deg); }
+        .cover-img { transform: rotateY(90deg); opacity: 0; }
 
         .book-tooltip {
             position: absolute;
@@ -138,39 +130,21 @@
             text-align: center;
         }
 
-        .book-tooltip .title {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
         .book-link:hover .book-container {
             width: 130px;
             transform: translateY(-20px) scale(1.05);
             box-shadow: 10px 15px 20px rgba(0,0,0,0.6);
         }
 
-        .book-link:hover .spine-img {
-            transform: rotateY(-90deg);
-            opacity: 0;
-        }
+        .book-link:hover .spine-img { transform: rotateY(-90deg); opacity: 0; }
+        .book-link:hover .cover-img { transform: rotateY(0deg); opacity: 1; }
+        .book-link:hover .book-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .book-link:hover .cover-img {
-            transform: rotateY(0deg);
-            opacity: 1;
-        }
-
-        .book-link:hover .book-tooltip {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
+        /* 弹窗通用样式 */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.85);
             z-index: 100;
             justify-content: center;
@@ -207,23 +181,13 @@
             padding: 5px 12px;
             cursor: pointer;
             font-size: 1rem;
-            transition: all 0.1s;
-        }
-        .retro-btn:active {
-            border: 2px inset #f2e6ff;
-            background-color: #b399ff;
-        }
-        .retro-btn:disabled {
-            color: #888;
-            border: 2px solid #ccc;
-            background-color: #eee;
-            cursor: not-allowed;
+            margin: 2px;
         }
 
-        #comic-viewer-overlay .modal-window {
-            height: 90vh; 
-        }
+        .retro-btn:active { border: 2px inset #f2e6ff; background-color: #b399ff; }
 
+        /* 漫画查看器样式 */
+        #comic-viewer-overlay .modal-window { height: 90vh; }
         .viewer-controls {
             background-color: #e6ccff;
             padding: 10px;
@@ -244,86 +208,73 @@
             align-items: center;
         }
 
-        .comic-page {
-            max-width: 100%;
-            height: auto;
-            display: none;
-        }
+        .comic-page { max-width: 100%; height: auto; display: none; }
         .comic-page.active { display: block; }
-        .scroll-mode .comic-page {
-            display: block;
-            margin-bottom: 15px;
-        }
+        .scroll-mode .comic-page { display: block; margin-bottom: 15px; }
 
         #click-zone-left, #click-zone-right {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 50%;
-            cursor: pointer;
-            z-index: 10;
+            position: absolute; top: 0; height: 100%; width: 50%;
+            cursor: pointer; z-index: 10;
         }
-        #click-zone-left { left: 0; }
-        #click-zone-right { right: 0; }
-        .scroll-mode #click-zone-left, .scroll-mode #click-zone-right {
-            display: none; 
-        }
+        #click-zone-left { left: 0; } #click-zone-right { right: 0; }
+        .scroll-mode #click-zone-left, .scroll-mode #click-zone-right { display: none; }
 
         /* 留言簿特有样式 */
-        #guestbook-overlay .modal-window {
-            height: 80vh;
-            max-width: 700px;
-        }
-
+        #guestbook-overlay .modal-window { height: 75vh; max-width: 600px; }
         #gb-messages-container {
             flex-grow: 1;
             background-color: #fff;
             margin: 10px;
             border: 2px inset #a888c8;
-            padding: 15px;
+            padding: 10px;
             overflow-y: auto;
+            color: #333;
         }
-
+        .gb-message-item { border-bottom: 1px dashed #ccc; padding: 10px 0; }
+        .gb-message-item .meta { font-size: 0.8rem; color: #666; margin-bottom: 4px; }
+        .gb-message-item .meta strong { color: #a888c8; font-size: 1rem; }
+        .gb-input-area {
+            background-color: #e6ccff;
+            padding: 10px;
+            border-top: 2px solid #a888c8;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .gb-input-area input, .gb-input-area textarea {
+            font-family: inherit; border: 2px inset #c8b3e0;
+            padding: 5px; background-color: #fff;
+        }
     </style>
 </head>
 <body>
 
-    <div class="instruction-box">
-        点选书架上想要看的漫画。
-    </div>
+    <div class="instruction-box">点选书架上想要看的漫画。</div>
 
     <div class="bookshelf">
-        <!-- 第 1 层 -->
         <div class="shelf">
-            
             <div class="book-group">
                 <a href="#" onclick="openComic('Bad Habits', 'comics/Bad Habits', 34); return false;" class="book-link">
                     <div class="book-tooltip">
-                        <span class="title">Bad Habits</span>
-                        <span class="author">By Prim</span>
+                        <span style="font-weight:bold; font-size:1.1rem;">Bad Habits</span>
+                        <span>By Prim</span>
                     </div>
                     <div class="book-container">
-                        <img src="comics/spine/badhabits.png" class="spine-img" alt="Bad Habits Spine">
-                        <img src="comics/Bad Habits/cover.webp" class="cover-img" alt="Bad Habits Cover">
+                        <img src="comics/spine/badhabits.png" class="spine-img" alt="Spine">
+                        <img src="comics/Bad Habits/cover.webp" class="cover-img" alt="Cover">
                     </div>
                 </a>
             </div>
-
         </div>
-
-        <div class="shelf"></div>
-        <div class="shelf"></div>
-        <div class="shelf"></div>
+        <div class="shelf"></div><div class="shelf"></div><div class="shelf"></div>
     </div>
 
-    <!-- 漫画阅读器视窗 -->
     <div id="comic-viewer-overlay" class="modal-overlay">
         <div class="modal-window">
             <div class="modal-header">
-                <span id="viewer-title">Reading: Title</span>
+                <span id="viewer-title">Reading</span>
                 <button class="retro-btn" onclick="closeComic()" style="padding: 2px 8px;">X</button>
             </div>
-
             <div class="viewer-controls">
                 <div>
                     <button class="retro-btn" onclick="prevPage()" id="btn-prev">⬅ Prev</button>
@@ -331,150 +282,147 @@
                     <button class="retro-btn" onclick="nextPage()" id="btn-next">Next ➡</button>
                 </div>
                 <div>
-                    <button class="retro-btn" onclick="openGuestbook()" id="btn-guestbook" style="margin-right: 10px;">Guestbook / 留言簿</button>
+                    <button class="retro-btn" onclick="openGuestbook()">Guestbook / 留言簿</button>
                     <button class="retro-btn" onclick="toggleMode()" id="btn-mode">Switch to Scroll ↕ / 切换至滚动</button>
                 </div>
             </div>
-
             <div id="viewer-content">
-                <div id="click-zone-left" onclick="prevPage()" title="上一页"></div>
-                <div id="click-zone-right" onclick="nextPage()" title="下一页"></div>
+                <div id="click-zone-left" onclick="prevPage()"></div>
+                <div id="click-zone-right" onclick="nextPage()"></div>
                 <div id="comic-images-container"></div>
             </div>
         </div>
     </div>
-
-    <!-- 留言簿视窗 (Utterances) -->
+    <!-- 纯正 Web 1.0 风格的留言板窗口 -->
     <div id="guestbook-overlay" class="modal-overlay">
         <div class="modal-window">
             <div class="modal-header">
-                <span>Guestbook - <span id="gb-title-display">Title</span></span>
+                <span>Guestbook - <span id="gb-title-display"></span></span>
                 <button class="retro-btn" onclick="closeGuestbook()" style="padding: 2px 8px;">X</button>
             </div>
-            
-            <div id="gb-messages-container">
-                <!-- Utterances 留言板将加载于此 -->
+            <div id="gb-messages-container">读取中...</div>
+            <div class="gb-input-area">
+                <input type="text" id="gb-name" placeholder="Your Name / 你的昵称 (匿名可不填)" maxlength="20">
+                <textarea id="gb-text" placeholder="Leave a message... / 留下你的足迹..." maxlength="200"></textarea>
+                <button class="retro-btn" id="btn-submit-gb" onclick="submitMessage()">Sign Guestbook / 签下大名</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ----- 漫画阅读器逻辑 -----
+        // ==========================================
+        // 1. 初始化 Supabase 数据库 (务必填写你的数据！)
+        // ==========================================
+        const SUPABASE_URL = 'https://teayijsnomfmnjwudqqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlYXlpanNub21mbW5qd3VkcXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MDAzMzEsImV4cCI6MjA5NjA3NjMzMX0._TuhehCV1GsmroA8mGnm9O5bq_5ghUC_zq6Hp2Cklog';
+        
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // （阅读器逻辑保持不变）
         let currentPage = 0;
         let totalPages = 0;
         let isScrollMode = false;
-        let currentComicTitle = ""; 
+        let currentComicTitle = "";
 
-        const comicOverlay = document.getElementById('comic-viewer-overlay');
-        const container = document.getElementById('comic-images-container');
-        const viewerContent = document.getElementById('viewer-content');
-        const pageCounter = document.getElementById('page-counter');
-        const btnPrev = document.getElementById('btn-prev');
-        const btnNext = document.getElementById('btn-next');
-        const btnMode = document.getElementById('btn-mode');
-        const viewerTitle = document.getElementById('viewer-title');
-
-        function openComic(title, folderPath, lastPageNumber) {
-            currentComicTitle = title; 
-            viewerTitle.innerText = "Reading: " + title;
-            totalPages = lastPageNumber;
-            currentPage = 0; 
+        function openComic(title, folderPath, lastPage) {
+            currentComicTitle = title;
+            totalPages = lastPage;
+            currentPage = 0;
             isScrollMode = false;
+            document.getElementById('viewer-title').innerText = "Reading: " + title;
             
-            viewerContent.classList.remove('scroll-mode');
-            btnMode.innerText = "Switch to Scroll ↕ / 切换至滚动";
-            container.innerHTML = ''; 
-
-            for (let i = 0; i <= lastPageNumber; i++) {
+            const container = document.getElementById('comic-images-container');
+            container.innerHTML = '';
+            for (let i = 0; i <= lastPage; i++) {
                 const img = document.createElement('img');
-                img.src = `${folderPath}/${i}.webp`; 
+                img.src = `${folderPath}/${i}.webp`;
                 img.className = 'comic-page';
                 img.id = `page-${i}`;
-                img.loading = "lazy"; 
+                img.loading = "lazy";
                 container.appendChild(img);
             }
-
             updateView();
-            comicOverlay.style.display = 'flex';
-        }
-
-        function closeComic() {
-            comicOverlay.style.display = 'none';
-            container.innerHTML = ''; 
-        }
-
-        function toggleMode() {
-            isScrollMode = !isScrollMode;
-            if (isScrollMode) {
-                viewerContent.classList.add('scroll-mode');
-                btnMode.innerText = "Switch to Pages ↔ / 切换至翻页";
-                btnPrev.disabled = true;
-                btnNext.disabled = true;
-                pageCounter.innerText = `All ${totalPages + 1} Pages`;
-            } else {
-                viewerContent.classList.remove('scroll-mode');
-                btnMode.innerText = "Switch to Scroll ↕ / 切换至滚动";
-                updateView();
-            }
-        }
-
-        function nextPage() {
-            if (isScrollMode || currentPage >= totalPages) return;
-            currentPage++;
-            updateView();
-        }
-
-        function prevPage() {
-            if (isScrollMode || currentPage <= 0) return; 
-            currentPage--;
-            updateView();
+            document.getElementById('comic-viewer-overlay').style.display = 'flex';
         }
 
         function updateView() {
             if (isScrollMode) return;
-            const allImages = document.querySelectorAll('.comic-page');
-            allImages.forEach(img => img.classList.remove('active'));
+            document.querySelectorAll('.comic-page').forEach(img => img.classList.remove('active'));
+            document.getElementById(`page-${currentPage}`).classList.add('active');
+            document.getElementById('page-counter').innerText = (currentPage === 0 ? "Cover" : currentPage) + " / " + totalPages;
+            document.getElementById('btn-prev').disabled = (currentPage === 0);
+            document.getElementById('btn-next').disabled = (currentPage === totalPages);
+            document.getElementById('viewer-content').scrollTop = 0;
+        }
 
-            const currentImg = document.getElementById(`page-${currentPage}`);
-            if (currentImg) {
-                currentImg.classList.add('active');
+        function nextPage() { if (currentPage < totalPages) { currentPage++; updateView(); } }
+        function prevPage() { if (currentPage > 0) { currentPage--; updateView(); } }
+        function closeComic() { document.getElementById('comic-viewer-overlay').style.display = 'none'; }
+        function toggleMode() {
+            isScrollMode = !isScrollMode;
+            const content = document.getElementById('viewer-content');
+            const btn = document.getElementById('btn-mode');
+            if (isScrollMode) {
+                content.classList.add('scroll-mode');
+                btn.innerText = "Switch to Pages ↔ / 切换至翻页";
+            } else {
+                content.classList.remove('scroll-mode');
+                btn.innerText = "Switch to Scroll ↕ / 切换至滚动";
+                updateView();
             }
+        }
 
-            let displayPageText = (currentPage === 0) ? "Cover" : currentPage;
-            pageCounter.innerText = `${displayPageText} / ${totalPages}`;
+        // --- 留言簿数据库逻辑 ---
+        async function openGuestbook() {
+            document.getElementById('gb-title-display').innerText = currentComicTitle;
+            document.getElementById('guestbook-overlay').style.display = 'flex';
+            fetchMessages();
+        }
+
+        async function fetchMessages() {
+            const container = document.getElementById('gb-messages-container');
+            container.innerHTML = '读取中...';
             
-            btnPrev.disabled = (currentPage === 0);
-            btnNext.disabled = (currentPage === totalPages);
-            viewerContent.scrollTop = 0; 
+            const { data, error } = await _supabase
+                .from('Guestbook')
+                .select('*')
+                .eq('comicTitle', currentComicTitle)
+                .order('created_at', { ascending: false });
+
+            if (error) { container.innerHTML = '读取失败: ' + error.message; return; }
+            if (data.length === 0) { container.innerHTML = '还没有人留言哦，快来占个沙发吧！'; return; }
+
+            container.innerHTML = '';
+            data.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'gb-message-item';
+                const date = new Date(msg.created_at).toLocaleString();
+                div.innerHTML = `<div class="meta"><strong>${msg.nickname}</strong> - ${date}</div><div>${msg.content}</div>`;
+                container.appendChild(div);
+            });
         }
 
-        // ----- 留言簿逻辑 (改为 Utterances) -----
-        const guestbookOverlay = document.getElementById('guestbook-overlay');
-        const gbTitleDisplay = document.getElementById('gb-title-display');
-        const gbMessagesContainer = document.getElementById('gb-messages-container');
+        async function submitMessage() {
+            const name = document.getElementById('gb-name').value.trim() || "匿名";
+            const content = document.getElementById('gb-text').value.trim();
+            if (!content) return alert("内容不能为空！");
 
-        function openGuestbook() {
-            gbTitleDisplay.innerText = currentComicTitle;
-            guestbookOverlay.style.display = 'flex';
-            gbMessagesContainer.innerHTML = ''; 
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true; btn.innerText = "发送中...";
 
-            const script = document.createElement('script');
-            script.src = "https://utteranc.es/client.js";
-            
-            // 这里我已经为你填好了你的仓库名！不需要任何复杂的 ID！
-            script.setAttribute("repo", "driedpenguin/driedpenguin.github.io"); 
-            script.setAttribute("issue-term", currentComicTitle); // 使用漫画名作为 Issue 标题
-            script.setAttribute("theme", "github-light");
-            script.setAttribute("crossorigin", "anonymous");
-            script.async = true;
+            const { error } = await _supabase
+                .from('Guestbook')
+                .insert([{ comicTitle: currentComicTitle, nickname: name, content: content }]);
 
-            gbMessagesContainer.appendChild(script);
+            btn.disabled = false; btn.innerText = "Sign Guestbook / 签下大名";
+            if (error) alert("发送失败: " + error.message);
+            else {
+                document.getElementById('gb-text').value = '';
+                fetchMessages();
+            }
         }
 
-        function closeGuestbook() {
-            guestbookOverlay.style.display = 'none';
-            gbMessagesContainer.innerHTML = ''; // 关闭时清空，避免重复加载
-        }
+        function closeGuestbook() { document.getElementById('guestbook-overlay').style.display = 'none'; }
     </script>
 </body>
 </html>
