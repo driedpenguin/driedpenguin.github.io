@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -316,7 +317,8 @@
         const SUPABASE_URL = 'https://teayijsnomfmnjwudqqt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlYXlpanNub21mbW5qd3VkcXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MDAzMzEsImV4cCI6MjA5NjA3NjMzMX0._TuhehCV1GsmroA8mGnm9O5bq_5ghUC_zq6Hp2Cklog';
         
-        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 【修正1】將變數名稱改為 _supabase，與下方的調用保持一致
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // （阅读器逻辑保持不变）
         let currentPage = 0;
@@ -407,7 +409,8 @@
             const content = document.getElementById('gb-text').value.trim();
             if (!content) return alert("内容不能为空！");
 
-            const btn = document.getElementById('btn-submit');
+            // 【修正2】按鈕 ID 修正為 btn-submit-gb
+            const btn = document.getElementById('btn-submit-gb');
             btn.disabled = true; btn.innerText = "发送中...";
 
             const { error } = await _supabase
