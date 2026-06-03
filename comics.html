@@ -55,19 +55,18 @@
         }
 
         .shelf {
-            height: 250px; /* 为了容纳下方的留言簿按钮，稍微增加了层高 */
+            height: 250px;
             border-bottom: 15px solid #c8b3e0;
             border-top: 2px solid #8a6aab;
             display: flex;
             align-items: flex-end;
             padding: 0 30px;
-            gap: 20px; /* 增加了漫画之间的间距 */
+            gap: 20px;
             box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
             position: relative;
             z-index: 1;
         }
 
-        /* 漫画和按钮的整体包裹层 */
         .book-group {
             display: flex;
             flex-direction: column;
@@ -165,9 +164,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* 删除了原来的 .guestbook-btn-mini 样式 */
-
-        /* --- 弹窗基础样式 (共享给阅读器和留言板) --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -224,7 +220,6 @@
             cursor: not-allowed;
         }
 
-        /* --- 漫画阅读器特有样式 --- */
         #comic-viewer-overlay .modal-window {
             height: 90vh; 
         }
@@ -274,7 +269,7 @@
             display: none; 
         }
 
-        /* --- 留言簿特有样式 (已简化，配合Giscus) --- */
+        /* 留言簿特有样式 */
         #guestbook-overlay .modal-window {
             height: 80vh;
             max-width: 700px;
@@ -301,7 +296,6 @@
         <!-- 第 1 层 -->
         <div class="shelf">
             
-            <!-- 第一本漫画区块 -->
             <div class="book-group">
                 <a href="#" onclick="openComic('Bad Habits', 'comics/Bad Habits', 34); return false;" class="book-link">
                     <div class="book-tooltip">
@@ -313,7 +307,6 @@
                         <img src="comics/Bad Habits/cover.webp" class="cover-img" alt="Bad Habits Cover">
                     </div>
                 </a>
-                <!-- 书架上的留言按钮已删除 -->
             </div>
 
         </div>
@@ -323,10 +316,7 @@
         <div class="shelf"></div>
     </div>
 
-
-    <!-- ==========================================
-         漫画阅读器窗口 (无Back按钮，中英双语切换)
-         ========================================== -->
+    <!-- 漫画阅读器视窗 -->
     <div id="comic-viewer-overlay" class="modal-overlay">
         <div class="modal-window">
             <div class="modal-header">
@@ -341,9 +331,7 @@
                     <button class="retro-btn" onclick="nextPage()" id="btn-next">Next ➡</button>
                 </div>
                 <div>
-                    <!-- 留言簿按钮移动到了这里，在Switch按钮的左侧 -->
                     <button class="retro-btn" onclick="openGuestbook()" id="btn-guestbook" style="margin-right: 10px;">Guestbook / 留言簿</button>
-                    <!-- 切换按钮中英双语 -->
                     <button class="retro-btn" onclick="toggleMode()" id="btn-mode">Switch to Scroll ↕ / 切换至滚动</button>
                 </div>
             </div>
@@ -356,9 +344,7 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         留言簿窗口 (Giscus 容器)
-         ========================================== -->
+    <!-- 留言簿视窗 (Utterances) -->
     <div id="guestbook-overlay" class="modal-overlay">
         <div class="modal-window">
             <div class="modal-header">
@@ -366,25 +352,18 @@
                 <button class="retro-btn" onclick="closeGuestbook()" style="padding: 2px 8px;">X</button>
             </div>
             
-            <!-- 留言展示区 (Giscus 将自动把留言框塞进这里) -->
             <div id="gb-messages-container">
-                <div class="giscus"></div>
-                <div id="giscus-loading" style="text-align: center; color: #666; margin-top: 20px;">
-                    正在加载留言... <br> (初次部署需要一定时间，并确保已在 GitHub 配置 Giscus)
-                </div>
+                <!-- Utterances 留言板将加载于此 -->
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         JavaScript 逻辑控制
-         ========================================== -->
     <script>
         // ----- 漫画阅读器逻辑 -----
         let currentPage = 0;
         let totalPages = 0;
         let isScrollMode = false;
-        let currentComicTitle = ""; // 记录当前正在阅读的漫画标题，方便传给留言簿
+        let currentComicTitle = ""; 
 
         const comicOverlay = document.getElementById('comic-viewer-overlay');
         const container = document.getElementById('comic-images-container');
@@ -396,7 +375,7 @@
         const viewerTitle = document.getElementById('viewer-title');
 
         function openComic(title, folderPath, lastPageNumber) {
-            currentComicTitle = title; // 保存漫画标题
+            currentComicTitle = title; 
             viewerTitle.innerText = "Reading: " + title;
             totalPages = lastPageNumber;
             currentPage = 0; 
@@ -469,38 +448,23 @@
             viewerContent.scrollTop = 0; 
         }
 
-        // ----- 留言簿逻辑 (接入 Giscus) -----
+        // ----- 留言簿逻辑 (改为 Utterances) -----
         const guestbookOverlay = document.getElementById('guestbook-overlay');
         const gbTitleDisplay = document.getElementById('gb-title-display');
         const gbMessagesContainer = document.getElementById('gb-messages-container');
 
         function openGuestbook() {
-            // 设置标题为当前漫画名
             gbTitleDisplay.innerText = currentComicTitle;
             guestbookOverlay.style.display = 'flex';
-
-            // 每次打开留言板，动态加载 Giscus，以便它根据不同的漫画名字(data-term)匹配不同的讨论帖
-            gbMessagesContainer.innerHTML = '<div class="giscus"></div>'; 
+            gbMessagesContainer.innerHTML = ''; 
 
             const script = document.createElement('script');
-            script.src = "https://giscus.app/client.js";
+            script.src = "https://utteranc.es/client.js";
             
-            // ==========================================
-            // ⚠️ 极其重要：你需要将下方的信息替换为你自己的 GitHub 仓库信息！
-            // ==========================================
-            script.setAttribute("data-repo", "driedpenguin/driedpenguin.github.io"); // 例如: "driedpenguin/driedpenguin.github.io"
-            script.setAttribute("data-repo-id", "R_kgDOSSa4Xw"); 
-            script.setAttribute("data-category", "Announcements"); // 需要你在仓库里开启对应名字的 Discussions
-            script.setAttribute("data-category-id", "DIC_kwDOSSa4X84C-cAl");
-            
-            script.setAttribute("data-mapping", "specific");
-            script.setAttribute("data-term", currentComicTitle); // 使用当前漫画标题作为帖子的标识！
-            script.setAttribute("data-strict", "0");
-            script.setAttribute("data-reactions-enabled", "1");
-            script.setAttribute("data-emit-metadata", "0");
-            script.setAttribute("data-input-position", "top");
-            script.setAttribute("data-theme", "light");
-            script.setAttribute("data-lang", "zh-CN");
+            // 这里我已经为你填好了你的仓库名！不需要任何复杂的 ID！
+            script.setAttribute("repo", "driedpenguin/driedpenguin.github.io"); 
+            script.setAttribute("issue-term", currentComicTitle); // 使用漫画名作为 Issue 标题
+            script.setAttribute("theme", "github-light");
             script.setAttribute("crossorigin", "anonymous");
             script.async = true;
 
@@ -509,8 +473,8 @@
 
         function closeGuestbook() {
             guestbookOverlay.style.display = 'none';
+            gbMessagesContainer.innerHTML = ''; // 关闭时清空，避免重复加载
         }
-        // 删除了原来的 submitMessage 假函数
     </script>
 </body>
 </html>
